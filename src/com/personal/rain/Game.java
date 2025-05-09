@@ -1,6 +1,7 @@
 package com.personal.rain;
 
 import com.personal.rain.graphics.Screen;
+import com.personal.rain.input.Keyboard;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -34,6 +35,9 @@ public class Game extends Canvas implements Runnable {
     // ventana
     private JFrame frame;
 
+    // objeto que me permite escuchar el evento de tecleo
+    private Keyboard key;
+
     private boolean running = false;
 
     private BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -42,11 +46,17 @@ public class Game extends Canvas implements Runnable {
 
     private Screen screen;
 
+    //variables using in render function
+    int x = 0, y = 0;
+
     public Game() {
         Dimension size = new Dimension(width * scale, height * scale);
         setPreferredSize(size);
         screen = new Screen(width, height);
         frame = new JFrame();
+        key = new Keyboard();
+
+        addKeyListener(key);
     }
 
     // synchronized preventing thread interference
@@ -101,7 +111,11 @@ public class Game extends Canvas implements Runnable {
     }
 
     public void update() {
-
+        key.update();
+        if (key.up) y--;
+        if (key.down) y++;
+        if (key.left) x--;
+        if (key.right) x++;
     }
 
     public void render() {
@@ -111,7 +125,7 @@ public class Game extends Canvas implements Runnable {
             return;
         }
         screen.clear();
-        screen.render();
+        screen.render(x, y);
 
         for (int i = 0; i < pixels.length; i++) {
             pixels[i] = screen.pixels[i];
